@@ -68,6 +68,8 @@ public class gridScript : MonoBehaviour
             }
         }
 
+        bombScript.DecreaseBombActionCount();
+
         if (result)
         {
             this.DrawTiles();
@@ -76,6 +78,7 @@ public class gridScript : MonoBehaviour
         {
             this.RotateSelectedTiles(selectedTiles, !isItCounterClockwise);
         }
+
     }
 
     private void SetTiles()
@@ -336,17 +339,17 @@ public class gridScript : MonoBehaviour
 
     private void DeleteTiles(TileClass tile, List<TileClass> sameColorTiles)
     {
-        allTiles.tileList = allTiles.tileList.Except(sameColorTiles).ToList();
-        allTiles.tileList.Remove(tile);
-        selectedTiles = selectedTiles.Except(sameColorTiles).ToList();
-        selectedTiles.Remove(tile);
+        List<TileClass> tilesToDestroy = new List<TileClass>(sameColorTiles);
+        tilesToDestroy.Add(tile);
 
-        for (int a = 0; a < sameColorTiles.Count; a++)
+
+        for (int a = 0; a < tilesToDestroy.Count; a++)
         {
+            this.AddNewTileToTop(tilesToDestroy[a]);
 
-            if (sameColorTiles[a].isItBombTile)
+            if (tilesToDestroy[a].isItBombTile)
             {
-                sameColorTiles[a].isItBombTile = false;
+                tilesToDestroy[a].isItBombTile = false;
                 isBombActive.value = false;
             }
 
@@ -358,6 +361,24 @@ public class gridScript : MonoBehaviour
             }
         }
 
+        allTiles.tileList = allTiles.tileList.Except(tilesToDestroy).ToList();
+        selectedTiles = selectedTiles.Except(tilesToDestroy).ToList();
+
         sameColorTiles.Clear();
+    }
+
+    private void AddNewTileToTop(TileClass DestroyedTile)
+    {
+        int tileX = DestroyedTile.x;
+        int tileY = DestroyedTile.y;
+        List<TileClass> tilesToGoDown = allTiles.tileList.Where(tile => tile.x > tileX && tile.y == tileY).ToList();
+
+        for (int i = 0; i < tilesToGoDown.Count; i++)
+        {
+            tilesToGoDown[i].x--;
+        }
+        Color color = colors[UnityEngine.Random.Range(0, colors.Count)];
+        TileClass tileToAdd = new TileClass(color, numberOfRows.value -1, tileY);
+        allTiles.tileList.Add(tileToAdd);
     }
 }

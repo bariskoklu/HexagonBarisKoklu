@@ -21,8 +21,17 @@ public class BombScript : MonoBehaviour
         bombActionCount.value = numberOfActionsBeforeBombExplodes;
     }
 
-    public void DestroyBomb()
+    private void ExplodeBomb()
     {
-        //TODO: Oyunu bitir.
+        GameManager.instance.RestartGame();
+    }
+
+    public void DecreaseBombActionCount()
+    {
+        bombActionCount.value -= 1;
+        if (bombActionCount.value <= 0)
+        {
+            ExplodeBomb();
+        }
     }
 }
