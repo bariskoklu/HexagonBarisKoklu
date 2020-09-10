@@ -436,6 +436,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cbd0957ac680884c9785c7d953829e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allTiles: {fileID: 11400000, guid: 6daa4a5575ab56c4d977eabe7264cf98, type: 2}
+  selectedTiles: {fileID: 11400000, guid: 9ebfddf4d5edb3e40a50df05585ee6a0, type: 2}
+  score: {fileID: 11400000, guid: 1a0797c77b9741743ae0ce973f9629ff, type: 2}
+  isBombActive: {fileID: 11400000, guid: 3d7ef35de5a1e0e4abd1a829fdab690d, type: 2}
   isTilesRotating: 0
 --- !u!4 &446124515
 Transform:

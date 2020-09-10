@@ -9,6 +9,11 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance = null;
 
+    public TileClassListType allTiles;
+    public TileClassListType selectedTiles;
+    public IntType score;
+    public BoolType isBombActive;
+
     public bool isTilesRotating = false;
     private void Awake()
     {
@@ -18,6 +23,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        ResetResources();
     }
 
     private void Start()
@@ -27,6 +34,15 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
+        ResetResources();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ResetResources()
+    {
+        allTiles.tileList.Clear();
+        selectedTiles.tileList.Clear();
+        score.value = 0;
+        isBombActive.value = false;
     }
 }
