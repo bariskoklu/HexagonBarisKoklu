@@ -22,6 +22,7 @@ public class DrawBombText : MonoBehaviour
 
     void Update()
     {
+        //Bomba aktifse, bombanın aktif olduğunu ve kaç move kaldığını belirten bir texti aktif ederek textin içini kalan move sayısıyla doldurur.
         if (isBombActive)
         {
             gameObject.SetActive(true);

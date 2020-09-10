@@ -5,8 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    //Singleton class. Oyunun resetlenmesi için kullanılıyor.
+
     public static GameManager instance = null;
 
+    public bool isTilesRotating = false;
     private void Awake()
     {
         if (instance == null)

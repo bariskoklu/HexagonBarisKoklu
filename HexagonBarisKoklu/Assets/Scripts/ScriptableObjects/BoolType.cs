@@ -5,5 +5,6 @@ using UnityEngine;
 public class BoolType : ScriptableObject
 {
     public bool value = false;
+
 }
 

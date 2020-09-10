@@ -6,4 +6,5 @@ using UnityEngine;
 public class IntType : ScriptableObject
 {
     public int value = 0;
+
 }

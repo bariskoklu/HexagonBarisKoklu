@@ -1,186 +1,116 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Linq;
+using Unity.Mathematics;
+using System;
 
-public class gridScript : MonoBehaviour
+public class RotateTiles : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public Tile tilePrefab;
     public IntType numberOfRows;
     public IntType numberOfColumns;
+    public TileClassListType allTiles;
+    public TileClassListType selectedTiles;
     public IntType score;
     public BoolType isBombActive;
-    public TileClassListType allTiles;
-    public List<Color> colors;
-    public List<TileClass> selectedTiles = new List<TileClass>();
 
+    public float totalRotationTime = 2.0f;
     public int scoreMultiplier = 5;
 
-    private Tilemap tilemap;
+    [NonSerialized]public bool isRotatingCounterClockwise;
+
     private BombScript bombScript;
+    private DrawAndSetTiles DrawAndSetTilesScript;
+    private bool isRotationComplete = false;
+    private float rotationTimer = 0.0f;
+    private List<TileClass> tilesToBeDeleted = new List<TileClass>();
+    private List<TileClass> tilesToCheck = new List<TileClass>();
+    // Start is called before the first frame update
     void Start()
     {
-        tilemap = gameObject.GetComponent<Tilemap>();
         bombScript = gameObject.GetComponent<BombScript>();
-
-        this.SetTiles();
-        this.DrawTiles();
+        DrawAndSetTilesScript = gameObject.GetComponent<DrawAndSetTiles>();
     }
 
+    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            GetThreeClosestTiles();
-            Vector3Int deneme;
-            deneme = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            //Debug.Log(tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
-            
-            TileClass a = (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == deneme.x && tileBelow.y == deneme.y));
+        //if (Input.GetKeyDown(KeyCode.K) && selectedTiles.tileList.Count != 0 && !GameManager.instance.isTilesRotating)
+        //{
+        //    isRotatingCounterClockwise = false;
+        //    this.HandleTilesRotation(selectedTiles.tileList, isRotatingCounterClockwise, true);
+        //}
 
-        }
+        //if (Input.GetKeyDown(KeyCode.Y) && selectedTiles.tileList.Count != 0 && !GameManager.instance.isTilesRotating)
+        //{
+        //    isRotatingCounterClockwise = true;
+        //    this.HandleTilesRotation(selectedTiles.tileList, isRotatingCounterClockwise, true);
+        //}
 
-        if (Input.GetKeyDown(KeyCode.K) && selectedTiles.Count != 0)
-        {
-            this.PerformRotation(false);
-        }
 
-        if (Input.GetKeyDown(KeyCode.Y) && selectedTiles.Count != 0)
-        {
-            this.PerformRotation(true);
-        }
+        this.HandleRotation();
+
     }
 
-    private void PerformRotation(bool isItCounterClockwise)
+    private void HandleRotation()
     {
-        this.RotateSelectedTiles(selectedTiles, isItCounterClockwise);
-        bool result = false;
-        for (int i = 0; i < selectedTiles.Count; i++)
+        //isTileRotating durumu oyuncu bir tile seçtikten sonra bu tilelı sağa veya sola döndürme durumu gerçekleşmekteyse true durumdadır.
+        if (GameManager.instance.isTilesRotating)
         {
-            if (this.CheckForMatchesForOneTile(selectedTiles[i]))
+            if (rotationTimer > 0)
             {
-                result = true;
+                rotationTimer -= Time.deltaTime;
+            }
+            else
+            {
+                rotationTimer = 0.0f;
+                isRotationComplete = true;
             }
         }
-
-        bombScript.DecreaseBombActionCount();
-
-        if (result)
+        //Rotasyon yeni bitmişse bu kod çalıştırılır.
+        if (GameManager.instance.isTilesRotating && isRotationComplete)
         {
-            this.DrawTiles();
-        }
-        else
-        {
-            this.RotateSelectedTiles(selectedTiles, !isItCounterClockwise);
-        }
-
-    }
-
-    private void SetTiles()
-    {
-        for (int k = 0; k < numberOfRows.value; k++)
-        {
-            for (int i = 0; i < numberOfColumns.value; i++)
+            //Rotasyon bittiği zaman, tilelar arasında aynı renk olan eşleşen tilelar var mı kontrolünün yapıldığı yer.
+            bool result = false;
+            tilesToCheck.AddRange(selectedTiles.tileList);
+            for (int i = 0; i < tilesToCheck.Count; i++)
             {
-                Color color = colors[UnityEngine.Random.Range(0, colors.Count)];
-                allTiles.tileList.Add(new TileClass(color, k, i));
-            }
-        }
-    }
-
-    private void DrawTiles()
-    {
-        selectedTiles.Clear();
-        for (int k = 0; k < numberOfRows.value; k++)
-        {
-            for (int i = 0; i < numberOfColumns.value; i++)
-            {
-                TileClass currentTile = allTiles.tileList.FirstOrDefault(tile => tile.x == k && tile.y == i);
-                if (currentTile != null)
+                if (this.CheckForMatchesForOneTile(tilesToCheck[i]))
                 {
-                    Vector3Int tilePosition = new Vector3Int(currentTile.x, currentTile.y, 1);
-                    tilemap.SetTile(tilePosition, tilePrefab);
-                    tilemap.SetTileFlags(tilePosition, TileFlags.None);
-                    tilemap.SetColor(tilePosition, currentTile.color);
-                    
-                }
-                else
-                {
-                    tilemap.SetTile(new Vector3Int(k, i, 1), null);
+                    result = true;
                 }
             }
+
+            bombScript.CheckForBomb();
+            //Eğer eşleşen (yani yok edilecek) tile olduysa o tileları yoketme işlemi ve eşleyen hiçbir tile olmadıysa tileları eski halina döndürme işlemi burada yapılır.
+            if (!result)
+            {
+                this.HandleTilesRotation(selectedTiles.tileList, !isRotatingCounterClockwise, true);
+            }
+            else
+            {
+                for (int i = 0; i < tilesToBeDeleted.Count; i++)
+                {
+                    this.DeleteTiles(tilesToBeDeleted[i]);
+                }
+                tilesToBeDeleted.Clear();
+                DrawAndSetTilesScript.DrawTiles();
+            }
+            GameManager.instance.isTilesRotating = false;
+            isRotationComplete = false;
         }
     }
-    //Basılan noktaya en yakın 3 tile bizim için seçilen 3 tile olacak. Üçgen paterni bu şekilde karşılanıyor.
-    private void GetThreeClosestTiles()
-    {
-        Vector3 mouseposition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        TileClass furthestTile = new TileClass(Color.white, 0, 0);
-        //Bütün satır ve sütunları dönüyoruz
-        selectedTiles.Clear();
-        for (int k = 0; k < numberOfRows.value; k++)
-        {
-            for (int i = 0; i < numberOfColumns.value; i++)
-            {
-                TileClass currentTile = allTiles.tileList.FirstOrDefault(tile => tile.x == k && tile.y == i);
-                Vector3Int currentTilePosition = new Vector3Int(k, i, 1);
-                if (currentTile != null)
-                {
-                    if (selectedTiles.Count < 3)
-                    {
-                        selectedTiles.Add(currentTile);
-                    }
-                    else
-                    {
 
-                        for (int x = 0; x < selectedTiles.Count; x++)
-                        {
-
-                            float distanceBetweenMouseAndFurthestTile = 0;
-                            if (x == 0)
-                            {
-                                furthestTile = currentTile;
-                            }
-                            distanceBetweenMouseAndFurthestTile = CalculateDistanceBetweenTileAndWorldPos(furthestTile, mouseposition);
-                            TileClass tileToReplace = selectedTiles[x];
-                            float distanceBetweenMouseAndTileToReplace = CalculateDistanceBetweenTileAndWorldPos(tileToReplace, mouseposition); ;
-
-                            if (distanceBetweenMouseAndFurthestTile < distanceBetweenMouseAndTileToReplace)
-                            {
-                                TileClass tempTile = selectedTiles[x];
-                                selectedTiles.RemoveAt(x);
-                                selectedTiles.Add(furthestTile);
-                                furthestTile = tempTile;
-                            }
-                        }
-                    }
-                }
-            }
-        }    
-    }
-
-    private float CalculateDistanceBetweenTileAndWorldPos(TileClass tile, Vector3 worldPos)
-    {
-        float distance  = 0.0f;
-
-        Vector3Int tilePosition = new Vector3Int(tile.x, tile.y, 1);
-        Vector2 tileWorldSpacePosition = tilemap.CellToWorld(tilePosition);
-        distance = Vector2.Distance(tileWorldSpacePosition, worldPos);
-
-        return distance;
-    }
-
+    //Tek bir tile için bu tilela eşleşen tile var mı kontrolü yapılır.
     private bool CheckForMatchesForOneTile(TileClass tile)
     {
         bool result = false;
 
         List<TileClass> neighborTiles = this.FindAllNeighbors(tile);
         List<TileClass> sameColorNeighbors = new List<TileClass>();
+
+        //ilk başta bütün komşuları bulunup, bu komşulardan kontrolü yapılan tile ile aynı renkte olan var mı diye bakılır.
         for (int i = 0; i < neighborTiles.Count; i++)
         {
             //Debug.Log(neighborTiles[i].x + "------------" + neighborTiles[i].y);
@@ -189,6 +119,7 @@ public class gridScript : MonoBehaviour
                 sameColorNeighbors.Add(neighborTiles[i]);
             }
         }
+        //Aynı renkte olan komşuların, birbiriyle komşu olup olmadığı bakılır, eğer birbirleriyle de komşularsa silinecek olarak işaretlenirler.
         for (int i = 0; i < sameColorNeighbors.Count; i++)
         {
             for (int k = 0; k < sameColorNeighbors.Count; k++)
@@ -196,8 +127,8 @@ public class gridScript : MonoBehaviour
                 //Debug.Log(sameColorNeighbors[i].x + "-----samecolor-----" + sameColorNeighbors[i].y);
                 if (i != k && this.IsTwoTilesNeighbors(sameColorNeighbors[i], sameColorNeighbors[k]) && sameColorNeighbors[i].color == sameColorNeighbors[k].color)
                 {
-                    this.DeleteTiles(tile, sameColorNeighbors);
-
+                    this.SetDeleteTiles(tile, sameColorNeighbors);
+                    
                     result = true;
                 }
             }
@@ -213,7 +144,7 @@ public class gridScript : MonoBehaviour
         //y değeri çift ise bir üstteki rowdan 1 kendi rowundan 2, bir alt rowdan 3 konşusu var.
         int currentRow = tile.x;
         int currentColumn = tile.y;
-        if (currentColumn % 2 != 0) 
+        if (currentColumn % 2 != 0)
         {
             //Alt row komşusunu ekleme
             if (currentRow != 0)
@@ -230,7 +161,7 @@ public class gridScript : MonoBehaviour
             {
                 neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn + 1));
             }
-            
+
             //Bir üst rowundaki komşularını ekleme
             if (currentRow != numberOfRows.value - 1)
             {
@@ -286,7 +217,9 @@ public class gridScript : MonoBehaviour
     //Verilen iki tile'ın birbirine komşu olup olmadığını dönen fonksiyon
     private bool IsTwoTilesNeighbors(TileClass tile1, TileClass tile2)
     {
-        if (math.abs(tile1.x - tile2.x) <= 1 && math.abs(tile1.y - tile2.y) <= 1)
+        List<TileClass> tile1Neighbors = this.FindAllNeighbors(tile1);
+       ;
+        if (tile1Neighbors.Exists(tile => tile.x == tile2.x && tile.y == tile2.y))
         {
             return true;
         }
@@ -296,13 +229,26 @@ public class gridScript : MonoBehaviour
         }
     }
 
+    public void HandleTilesRotation(List<TileClass> tiles, bool isItCounterClockwise, bool useTimer)
+    {
+        RotateSelectedTiles(tiles, isItCounterClockwise);
+        if (useTimer)
+        {
+            GameManager.instance.isTilesRotating = true;
+            rotationTimer = totalRotationTime;
+        }
+    }
+
+    //Tileların rotasyon işlemi için yazılmış fonksiyon.
     private void RotateSelectedTiles(List<TileClass> tiles, bool isItCounterClockwise)
     {
         List<TileClass> orderedTileList = new List<TileClass>();
         orderedTileList = tiles.OrderByDescending(tile => tile.x * numberOfColumns.value + tile.y).ToList();
+
+        //Saat yönünün tersine işlem gerçekleştirilmesine göre ve en büyük tile'ın (satır ve sütün olarak), ortanca tile ile aynı satırda olup olmadığına göre, sıralamalar ve düzenlemeler yapılır rotasyon için.
         if (isItCounterClockwise)
         {
-            if (orderedTileList[orderedTileList.Count-1].x == orderedTileList[orderedTileList.Count - 2].x)
+            if (orderedTileList[orderedTileList.Count - 1].x == orderedTileList[orderedTileList.Count - 2].x)
             {
                 orderedTileList = tiles.OrderBy(tile => tile.x * numberOfColumns.value + tile.y).ToList();
             }
@@ -314,6 +260,8 @@ public class gridScript : MonoBehaviour
                 orderedTileList = tiles.OrderBy(tile => tile.x * numberOfColumns.value + tile.y).ToList();
             }
         }
+
+        //Düzenlemeler yapıldıktan sonra, tilelar bir ötelenir.
         int tempX = 0;
         int tempY = 0;
         for (int i = 0; i < orderedTileList.Count; i++)
@@ -324,7 +272,7 @@ public class gridScript : MonoBehaviour
                 tempX = orderedTileList[i].x;
                 tempY = orderedTileList[i].y;
             }
-            if (i == orderedTileList.Count -1)
+            if (i == orderedTileList.Count - 1)
             {
                 orderedTileList[i].x = tempX;
                 orderedTileList[i].y = tempY;
@@ -335,50 +283,43 @@ public class gridScript : MonoBehaviour
                 orderedTileList[i].y = orderedTileList[i + 1].y;
             }
         }
+
+        DrawAndSetTilesScript.DrawTiles();
     }
 
-    private void DeleteTiles(TileClass tile, List<TileClass> sameColorTiles)
+    //hangi tilelların sileneceği flaglenir.
+    public void SetDeleteTiles(TileClass tile, List<TileClass> sameColorTiles)
     {
-        List<TileClass> tilesToDestroy = new List<TileClass>(sameColorTiles);
-        tilesToDestroy.Add(tile);
-
-
-        for (int a = 0; a < tilesToDestroy.Count; a++)
+        tilesToBeDeleted.Add(tile);
+        tilesToBeDeleted.AddRange(sameColorTiles);
+        tilesToCheck.Remove(tile);
+        for (int i = 0; i < sameColorTiles.Count; i++)
         {
-            this.AddNewTileToTop(tilesToDestroy[a]);
-
-            if (tilesToDestroy[a].isItBombTile)
-            {
-                tilesToDestroy[a].isItBombTile = false;
-                isBombActive.value = false;
-            }
-
-            score.value += scoreMultiplier;
-
-            if (score.value % 1000 == 0)
-            {
-                bombScript.SpawnBomb();
-            }
+            tilesToCheck.RemoveAll(tile1 => tile1.x == sameColorTiles[i].x && tile1.y == sameColorTiles[i].y);
         }
-
-        allTiles.tileList = allTiles.tileList.Except(tilesToDestroy).ToList();
-        selectedTiles = selectedTiles.Except(tilesToDestroy).ToList();
-
         sameColorTiles.Clear();
+        GameManager.instance.isTilesRotating = true;
+        rotationTimer = totalRotationTime;
     }
 
-    private void AddNewTileToTop(TileClass DestroyedTile)
+    //Belirli bir tile'ı silmek için kullanılır.
+    public void DeleteTiles(TileClass tile)
     {
-        int tileX = DestroyedTile.x;
-        int tileY = DestroyedTile.y;
-        List<TileClass> tilesToGoDown = allTiles.tileList.Where(tile => tile.x > tileX && tile.y == tileY).ToList();
+        allTiles.tileList.Remove(tile);
+        selectedTiles.tileList.Remove(tile);
+        DrawAndSetTilesScript.AddNewTileToTop(tile);
 
-        for (int i = 0; i < tilesToGoDown.Count; i++)
+        if (tile.isItBombTile)
         {
-            tilesToGoDown[i].x--;
+            tile.isItBombTile = false;
+            isBombActive.value = false;
         }
-        Color color = colors[UnityEngine.Random.Range(0, colors.Count)];
-        TileClass tileToAdd = new TileClass(color, numberOfRows.value -1, tileY);
-        allTiles.tileList.Add(tileToAdd);
+
+        score.value += scoreMultiplier;
+
+        if (score.value % 1000 == 0)
+        {
+            bombScript.SpawnBomb();
+        }
     }
 }
