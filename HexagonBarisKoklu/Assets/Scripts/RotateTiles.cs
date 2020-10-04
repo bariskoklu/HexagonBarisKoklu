@@ -322,4 +322,87 @@ public class RotateTiles : MonoBehaviour
             bombScript.SpawnBomb();
         }
     }
+
+    public List<TileClass> FindMatches()
+    {
+        List<TileClass> matchPositions = new List<TileClass>();
+
+        for (int y = 0; y < numberOfRows.value - 1; y++)
+        {
+            
+            if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 0 && tileBelow.y == y).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 0 && tileBelow.y == y +1).color)
+            {
+                if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 0 && tileBelow.y == y + 1).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 1 && tileBelow.y == y + 1).color)
+                {
+                    matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 0 && tileBelow.y == y));
+                    matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 0 && tileBelow.y == y + 1));
+                    matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == 1 && tileBelow.y == y + 1));
+                }
+            }
+        }
+
+        for (int x = 1; x < numberOfColumns.value - 1; x++)
+        {
+            if (x % 2 == 0)
+            {
+                for (int y = 0; y < numberOfRows.value - 1; y++)
+                {
+                    if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1).color)
+                    {
+
+                        if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x + 1 && tileBelow.y == y + 1).color)
+                        {
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x + 1 && tileBelow.y == y + 1));
+                        }
+                        if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x - 1 && tileBelow.y == y + 1).color)
+                        {
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x - 1 && tileBelow.y == y + 1));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int y = 0; y < numberOfRows.value - 1; y++)
+                {
+                    if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1).color)
+                    {
+
+                        if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x + 1 && tileBelow.y == y).color)
+                        {
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x + 1 && tileBelow.y == y));
+                        }
+                        if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x - 1  && tileBelow.y == y).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1).color)
+                        {
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x && tileBelow.y == y + 1));
+                            matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == x - 1 && tileBelow.y == y));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (int y = 0; y < numberOfRows.value - 1; y++)
+        {
+
+            if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 1  && tileBelow.y == y).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 1 && tileBelow.y == y + 1).color)
+            {
+                if (allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 1 && tileBelow.y == y + 1).color == allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 2 && tileBelow.y == y).color)
+                {
+                    matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 1 && tileBelow.y == y));
+                    matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 1 && tileBelow.y == y + 1));
+                    matchPositions.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == numberOfColumns.value - 2 && tileBelow.y == y));
+                }
+            }
+        }
+
+        return matchPositions;
+    }
 }
