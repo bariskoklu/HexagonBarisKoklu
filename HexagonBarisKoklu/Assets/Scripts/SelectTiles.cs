@@ -23,10 +23,10 @@ public class SelectTiles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Mouse0))
-        //{
-        //    this.GetThreeClosestTiles();
-        //}
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            this.GetThreeClosestTiles();
+        }
     }
 
     //Basılan noktaya en yakın 3 tile bizim için seçilen 3 tile olacak. Üçgen paterni bu şekilde karşılanıyor.
