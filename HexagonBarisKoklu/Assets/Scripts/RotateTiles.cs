@@ -339,17 +339,19 @@ public class RotateTiles : MonoBehaviour
 
         for (int x = 1; x < numberOfRows.value - 1; x++)
         {
-            if (x % 2 != 0)
+            //if (x % 2 == 0)
+            //{
+            for (int y = 0; y < numberOfColumns.value - 1; y++)
             {
-                for (int y = 0; y < numberOfColumns.value - 1; y++)
+                if (y % 2 == 0)
                 {
                     if (allTiles.getTile(x, y).color == allTiles.getTile(x, y + 1).color)
                     {
-                        if (allTiles.getTile(x, y + 1).color == allTiles.getTile(x + 1, y + 1).color)
+                        if (allTiles.getTile(x, y + 1).color == allTiles.getTile(x + 1, y).color)
                         {
                             matchPositions.Add(allTiles.getTile(x, y));
                             matchPositions.Add(allTiles.getTile(x, y + 1));
-                            matchPositions.Add(allTiles.getTile(x + 1, y + 1));
+                            matchPositions.Add(allTiles.getTile(x + 1, y));
                         }
                         if (allTiles.getTile(x, y + 1).color == allTiles.getTile(x - 1, y + 1).color)
                         {
@@ -359,19 +361,16 @@ public class RotateTiles : MonoBehaviour
                         }
                     }
                 }
-            }
-            else
-            {
-                for (int y = 0; y < numberOfColumns.value - 1; y++)
+                else
                 {
                     if (allTiles.getTile(x, y).color == allTiles.getTile(x, y + 1).color)
                     {
 
-                        if (allTiles.getTile(x, y + 1).color == allTiles.getTile(x + 1, y).color)
+                        if (allTiles.getTile(x + 1, y + 1).color == allTiles.getTile(x , y + 1).color)
                         {
                             matchPositions.Add(allTiles.getTile(x, y));
                             matchPositions.Add(allTiles.getTile(x, y + 1));
-                            matchPositions.Add(allTiles.getTile(x + 1, y));
+                            matchPositions.Add(allTiles.getTile(x + 1, y + 1));
                         }
                         if (allTiles.getTile(x - 1, y).color == allTiles.getTile(x, y + 1).color)
                         {
@@ -382,6 +381,29 @@ public class RotateTiles : MonoBehaviour
                     }
                 }
             }
+            //}
+            //else
+            //{
+            //    for (int y = 0; y < numberOfColumns.value - 1; y++)
+            //    {
+            //        if (allTiles.getTile(x, y).color == allTiles.getTile(x, y + 1).color)
+            //        {
+
+            //            if (allTiles.getTile(x + 1, y + 1).color == allTiles.getTile(x + 1, y).color)
+            //            {
+            //                matchPositions.Add(allTiles.getTile(x, y));
+            //                matchPositions.Add(allTiles.getTile(x, y + 1));
+            //                matchPositions.Add(allTiles.getTile(x + 1, y + 1));
+            //            }
+            //            if (allTiles.getTile(x - 1, y).color == allTiles.getTile(x, y + 1).color)
+            //            {
+            //                matchPositions.Add(allTiles.getTile(x, y));
+            //                matchPositions.Add(allTiles.getTile(x, y + 1));
+            //                matchPositions.Add(allTiles.getTile(x - 1, y));
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         for (int y = 0; y < numberOfColumns.value - 1; y++)
@@ -398,6 +420,10 @@ public class RotateTiles : MonoBehaviour
             }
         }
 
+        matchPositions = matchPositions
+            .GroupBy(a => new { a.x, a.y })
+            .Select(b => b.First())
+            .ToList();
         return matchPositions;
     }
 

@@ -74,7 +74,7 @@ public class DrawAndSetTiles : MonoBehaviour
 
         for (int i = 0; i < tilesToGoDown.Count; i++)
         {
-            tilesToGoDown[i].x--;
+            tilesToGoDown[i].x -= 1;
         }
         Color color = colors[UnityEngine.Random.Range(0, colors.Count)];
         TileClass tileToAdd = new TileClass(color, numberOfRows.value -1, tileY);
