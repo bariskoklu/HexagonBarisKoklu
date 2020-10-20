@@ -99,131 +99,131 @@ public class RotateTiles : MonoBehaviour
     }
 
     //Tek bir tile için bu tilela eşleşen tile var mı kontrolü yapılır.
-    private bool CheckForMatchesForOneTile(TileClass tile)
-    {
-        bool result = false;
+    //private bool CheckForMatchesForOneTile(TileClass tile)
+    //{
+    //    bool result = false;
 
-        List<TileClass> neighborTiles = this.FindAllNeighbors(tile);
-        List<TileClass> sameColorNeighbors = new List<TileClass>();
+    //    List<TileClass> neighborTiles = this.FindAllNeighbors(tile);
+    //    List<TileClass> sameColorNeighbors = new List<TileClass>();
 
-        //ilk başta bütün komşuları bulunup, bu komşulardan kontrolü yapılan tile ile aynı renkte olan var mı diye bakılır.
-        for (int i = 0; i < neighborTiles.Count; i++)
-        {
-            //Debug.Log(neighborTiles[i].x + "------------" + neighborTiles[i].y);
-            if (neighborTiles[i].color == tile.color)
-            {
-                sameColorNeighbors.Add(neighborTiles[i]);
-            }
-        }
-        //Aynı renkte olan komşuların, birbiriyle komşu olup olmadığı bakılır, eğer birbirleriyle de komşularsa silinecek olarak işaretlenirler.
-        for (int i = 0; i < sameColorNeighbors.Count; i++)
-        {
-            for (int k = 0; k < sameColorNeighbors.Count; k++)
-            {
-                //Debug.Log(sameColorNeighbors[i].x + "-----samecolor-----" + sameColorNeighbors[i].y);
-                if (i != k && this.IsTwoTilesNeighbors(sameColorNeighbors[i], sameColorNeighbors[k]) && sameColorNeighbors[i].color == sameColorNeighbors[k].color)
-                {
-                    this.SetDeleteTiles(tile, sameColorNeighbors);
+    //    //ilk başta bütün komşuları bulunup, bu komşulardan kontrolü yapılan tile ile aynı renkte olan var mı diye bakılır.
+    //    for (int i = 0; i < neighborTiles.Count; i++)
+    //    {
+    //        //Debug.Log(neighborTiles[i].x + "------------" + neighborTiles[i].y);
+    //        if (neighborTiles[i].color == tile.color)
+    //        {
+    //            sameColorNeighbors.Add(neighborTiles[i]);
+    //        }
+    //    }
+    //    //Aynı renkte olan komşuların, birbiriyle komşu olup olmadığı bakılır, eğer birbirleriyle de komşularsa silinecek olarak işaretlenirler.
+    //    for (int i = 0; i < sameColorNeighbors.Count; i++)
+    //    {
+    //        for (int k = 0; k < sameColorNeighbors.Count; k++)
+    //        {
+    //            //Debug.Log(sameColorNeighbors[i].x + "-----samecolor-----" + sameColorNeighbors[i].y);
+    //            if (i != k && this.IsTwoTilesNeighbors(sameColorNeighbors[i], sameColorNeighbors[k]) && sameColorNeighbors[i].color == sameColorNeighbors[k].color)
+    //            {
+    //                this.SetDeleteTiles(tile, sameColorNeighbors);
                     
-                    result = true;
-                }
-            }
-        }
-        return result;
-    }
+    //                result = true;
+    //            }
+    //        }
+    //    }
+    //    return result;
+    //}
 
-    private List<TileClass> FindAllNeighbors(TileClass tile)
-    {
-        List<TileClass> neighborList = new List<TileClass>();
-        //y değeri tek olan ve y değeri çift olan tilelar için bulma mantığı farklı
-        //y değeri tek ise bir üstteki rowdan 3, kendi rowundan 2, bir alt rowdan 1 tane komşusu var.
-        //y değeri çift ise bir üstteki rowdan 1 kendi rowundan 2, bir alt rowdan 3 konşusu var.
-        int currentRow = tile.x;
-        int currentColumn = tile.y;
-        if (currentColumn % 2 != 0)
-        {
-            //Alt row komşusunu ekleme
-            if (currentRow != 0)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn));
-            }
+    //private List<TileClass> FindAllNeighbors(TileClass tile)
+    //{
+    //    List<TileClass> neighborList = new List<TileClass>();
+    //    //y değeri tek olan ve y değeri çift olan tilelar için bulma mantığı farklı
+    //    //y değeri tek ise bir üstteki rowdan 3, kendi rowundan 2, bir alt rowdan 1 tane komşusu var.
+    //    //y değeri çift ise bir üstteki rowdan 1 kendi rowundan 2, bir alt rowdan 3 konşusu var.
+    //    int currentRow = tile.x;
+    //    int currentColumn = tile.y;
+    //    if (currentColumn % 2 != 0)
+    //    {
+    //        //Alt row komşusunu ekleme
+    //        if (currentRow != 0)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn));
+    //        }
 
-            //Kendi rowundaki komşularını ekleme
-            if (currentColumn != 0)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn - 1));
-            }
-            if (currentColumn != numberOfColumns.value - 1)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn + 1));
-            }
+    //        //Kendi rowundaki komşularını ekleme
+    //        if (currentColumn != 0)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn - 1));
+    //        }
+    //        if (currentColumn != numberOfColumns.value - 1)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn + 1));
+    //        }
 
-            //Bir üst rowundaki komşularını ekleme
-            if (currentRow != numberOfRows.value - 1)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn));
+    //        //Bir üst rowundaki komşularını ekleme
+    //        if (currentRow != numberOfRows.value - 1)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn));
 
-                if (currentColumn != 0)
-                {
-                    neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn - 1));
-                }
+    //            if (currentColumn != 0)
+    //            {
+    //                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn - 1));
+    //            }
 
-                if (currentColumn != numberOfColumns.value - 1)
-                {
-                    neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn + 1));
-                }
-            }
-        }
-        else
-        {
-            //Alt row komşusunu ekleme
-            if (currentRow != 0)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn));
-                if (currentColumn != 0)
-                {
-                    neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn - 1));
-                }
+    //            if (currentColumn != numberOfColumns.value - 1)
+    //            {
+    //                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn + 1));
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        //Alt row komşusunu ekleme
+    //        if (currentRow != 0)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn));
+    //            if (currentColumn != 0)
+    //            {
+    //                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn - 1));
+    //            }
 
-                if (currentColumn != numberOfColumns.value - 1)
-                {
-                    neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn + 1));
-                }
-            }
+    //            if (currentColumn != numberOfColumns.value - 1)
+    //            {
+    //                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow - 1 && tileBelow.y == currentColumn + 1));
+    //            }
+    //        }
 
-            //Kendi rowundaki komşularını ekleme
-            if (currentColumn != 0)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn - 1));
-            }
-            if (currentColumn != numberOfColumns.value - 1)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn + 1));
-            }
+    //        //Kendi rowundaki komşularını ekleme
+    //        if (currentColumn != 0)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn - 1));
+    //        }
+    //        if (currentColumn != numberOfColumns.value - 1)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow && tileBelow.y == currentColumn + 1));
+    //        }
 
-            //Bir üst rowundaki komşularını ekleme
-            if (currentRow != numberOfRows.value - 1)
-            {
-                neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn));
-            }
-        }
-        neighborList = neighborList.Where(tile1 => tile1 != null).ToList();
-        return neighborList;
-    }
-    //Verilen iki tile'ın birbirine komşu olup olmadığını dönen fonksiyon
-    private bool IsTwoTilesNeighbors(TileClass tile1, TileClass tile2)
-    {
-        List<TileClass> tile1Neighbors = this.FindAllNeighbors(tile1);
-       ;
-        if (tile1Neighbors.Exists(tile => tile.x == tile2.x && tile.y == tile2.y))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    //        //Bir üst rowundaki komşularını ekleme
+    //        if (currentRow != numberOfRows.value - 1)
+    //        {
+    //            neighborList.Add(allTiles.tileList.FirstOrDefault(tileBelow => tileBelow.x == currentRow + 1 && tileBelow.y == currentColumn));
+    //        }
+    //    }
+    //    neighborList = neighborList.Where(tile1 => tile1 != null).ToList();
+    //    return neighborList;
+    //}
+    ////Verilen iki tile'ın birbirine komşu olup olmadığını dönen fonksiyon
+    //private bool IsTwoTilesNeighbors(TileClass tile1, TileClass tile2)
+    //{
+    //    List<TileClass> tile1Neighbors = this.FindAllNeighbors(tile1);
+    //   ;
+    //    if (tile1Neighbors.Exists(tile => tile.x == tile2.x && tile.y == tile2.y))
+    //    {
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
     public void HandleTilesRotation(List<TileClass> tiles, bool isItCounterClockwise, bool useTimer)
     {

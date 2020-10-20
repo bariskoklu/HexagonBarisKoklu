@@ -40,7 +40,7 @@ public class SelectTiles : MonoBehaviour
         {
             for (int i = 0; i < numberOfColumns.value; i++)
             {
-                TileClass currentTile = allTiles.tileList.FirstOrDefault(tile => tile.x == k && tile.y == i);
+                TileClass currentTile = allTiles.getTile(k,i);
                 Vector3Int currentTilePosition = new Vector3Int(k, i, 1);
                 if (currentTile != null)
                 {

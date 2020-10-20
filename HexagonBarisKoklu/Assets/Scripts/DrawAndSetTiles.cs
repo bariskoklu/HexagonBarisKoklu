@@ -48,7 +48,7 @@ public class DrawAndSetTiles : MonoBehaviour
         {
             for (int i = 0; i < numberOfColumns.value; i++)
             {
-                TileClass currentTile = allTiles.tileList.FirstOrDefault(tile => tile.x == k && tile.y == i);
+                TileClass currentTile = allTiles.getTile(k,i);
                 if (currentTile != null)
                 {
                     Vector3Int tilePosition = new Vector3Int(currentTile.x, currentTile.y, 1);
