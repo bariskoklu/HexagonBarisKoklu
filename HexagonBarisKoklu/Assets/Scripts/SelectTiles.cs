@@ -50,39 +50,43 @@ public class SelectTiles : MonoBehaviour
                     }
                     else
                     {
+                        furthestTile = currentTile;
 
                         for (int x = 0; x < selectedTiles.tileList.Count; x++)
                         {
-
                             float distanceBetweenMouseAndFurthestTile = 0;
-                            if (x == 0)
-                            {
-                                furthestTile = currentTile;
-                            }
                             distanceBetweenMouseAndFurthestTile = CalculateDistanceBetweenTileAndWorldPos(furthestTile, mouseposition);
                             TileClass tileToReplace = selectedTiles.tileList[x];
                             float distanceBetweenMouseAndTileToReplace = CalculateDistanceBetweenTileAndWorldPos(tileToReplace, mouseposition); ;
 
-                            if (distanceBetweenMouseAndFurthestTile < distanceBetweenMouseAndTileToReplace)
+                            if (distanceBetweenMouseAndFurthestTile <= distanceBetweenMouseAndTileToReplace)
                             {
                                 TileClass tempTile = selectedTiles.tileList[x];
                                 selectedTiles.tileList.RemoveAt(x);
                                 selectedTiles.tileList.Add(furthestTile);
                                 furthestTile = tempTile;
+                                x = 0; //for resetting the loop
                             }
                         }
                     }
                 }
             }
         }
+        Debug.Log("Mouse Position : " + mouseposition);
+        for (int x = 0; x < selectedTiles.tileList.Count; x++)
+        {
+            Vector3Int tilePosition = new Vector3Int(selectedTiles.tileList[x].x, selectedTiles.tileList[x].y, 0);
+            Debug.Log("Cell " + x + " Position : " + tilemap.GetCellCenterWorld(tilePosition));
+        }
+        
     }
 
     private float CalculateDistanceBetweenTileAndWorldPos(TileClass tile, Vector3 worldPos)
     {
         float distance = 0.0f;
 
-        Vector3Int tilePosition = new Vector3Int(tile.x, tile.y, 1);
-        Vector2 tileWorldSpacePosition = tilemap.CellToWorld(tilePosition);
+        Vector3Int tilePosition = new Vector3Int(tile.x, tile.y, -10);
+        Vector3 tileWorldSpacePosition = tilemap.GetCellCenterWorld(tilePosition);
         distance = Vector2.Distance(tileWorldSpacePosition, worldPos);
 
         return distance;
