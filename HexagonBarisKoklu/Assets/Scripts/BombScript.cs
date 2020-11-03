@@ -24,9 +24,9 @@ public class BombScript : MonoBehaviour
     //Bombanın patlama fonksiyonu. Oyunu restartlar.
     private void ExplodeBomb()
     {
-        bombActionCount.value = numberOfActionsBeforeBombExplodes;
         isBombActive.value = false;
-        GameManager.instance.RestartGame();
+        GameManager.instance.ChangeState(GameManager.GameStates.PausedState);
+        bombActionCount.value = numberOfActionsBeforeBombExplodes;
     }
     //Bombanın patlaması için kalan move sayısını azaltır.
     private void DecreaseBombActionCount()

@@ -9,6 +9,8 @@ public class AdsManager : MonoBehaviour
     string gameId = "3885967";
     bool testMode = true;
 
+    public static AdsManager instance = null;
+
     private Button button;
 
     private string rewardedAdsPlacementId = "rewardedVideo";
@@ -16,8 +18,19 @@ public class AdsManager : MonoBehaviour
     public IntType bombActionCount;
     public int adRewardBombCount;
 
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
+        DontDestroyOnLoad(gameObject);
         Advertisement.Initialize(gameId, testMode);
     }
 
@@ -44,10 +57,11 @@ public class AdsManager : MonoBehaviour
         }
         else if (showResult == ShowResult.Skipped)
         {
-            // Do not reward the user for skipping the ad.
+            GameManager.instance.RestartGame();
         }
         else if (showResult == ShowResult.Failed)
         {
+            GameManager.instance.RestartGame();
             Debug.LogWarning("The ad did not finish due to an error.");
         }
     }

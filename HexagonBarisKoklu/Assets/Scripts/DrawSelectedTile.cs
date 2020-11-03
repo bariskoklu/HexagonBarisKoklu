@@ -20,6 +20,10 @@ public class DrawSelectedTile : MonoBehaviour
     
     void Update()
     {
+        if (GameManager.instance.currentGameState == GameManager.GameStates.PausedState)
+        {
+            return;
+        }
         //SelectedTile listi için, 3 tane varolan image'ı dolrurur ve world pozisyonlarını bu listenin içindeki tileların world pozisyonlarıyla doldurur.
         if (selectedTiles.tileList.Count == 3)
         {

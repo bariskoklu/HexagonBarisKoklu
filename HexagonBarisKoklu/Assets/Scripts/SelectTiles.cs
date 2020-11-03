@@ -23,6 +23,10 @@ public class SelectTiles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.instance.currentGameState == GameManager.GameStates.PausedState)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             this.GetThreeClosestTiles();

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d3d4e6f4e9988643ab9ecececa9ddde, type: 3}
   m_Name: BombActionCount
   m_EditorClassIdentifier: 
-  value: 0
+  value: 5

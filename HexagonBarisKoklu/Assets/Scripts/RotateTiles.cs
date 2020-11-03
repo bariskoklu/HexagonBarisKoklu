@@ -37,6 +37,10 @@ public class RotateTiles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.instance.currentGameState == GameManager.GameStates.PausedState)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.K) && selectedTiles.tileList.Count != 0 && !GameManager.instance.isTilesRotating)
         {
             isRotatingCounterClockwise = false;
@@ -81,9 +85,7 @@ public class RotateTiles : MonoBehaviour
             //    {
             //        result = true;
             //    }
-            //}
-
-            bombScript.CheckForBomb();
+            //}            
             //Eğer eşleşen (yani yok edilecek) tile olduysa o tileları yoketme işlemi ve eşleyen hiçbir tile olmadıysa tileları eski halina döndürme işlemi burada yapılır.
             if (tilesToBeDeleted.Count == 0)
             {
@@ -93,6 +95,7 @@ public class RotateTiles : MonoBehaviour
             {
                 this.DeleteTiles(tilesToBeDeleted);
             }
+            bombScript.CheckForBomb();
             GameManager.instance.isTilesRotating = false;
             isRotationComplete = false;
         }

@@ -21,6 +21,10 @@ public class HandleInput : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.currentGameState == GameManager.GameStates.PausedState)
+        {
+            return;
+        }
         if (Input.touchCount == 1) // user is touching the screen with a single touch
         {
             Touch touch = Input.GetTouch(0); // get the touch
