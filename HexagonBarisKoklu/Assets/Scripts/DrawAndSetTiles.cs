@@ -55,7 +55,7 @@ public class DrawAndSetTiles : MonoBehaviour
                     tilemap.SetTile(tilePosition, tilePrefab);
                     tilemap.SetTileFlags(tilePosition, TileFlags.None);
                     tilemap.SetColor(tilePosition, currentTile.color);
-                    
+
                 }
                 else
                 {

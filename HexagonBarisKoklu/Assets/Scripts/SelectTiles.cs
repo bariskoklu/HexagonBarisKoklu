@@ -23,7 +23,7 @@ public class SelectTiles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.instance.currentGameState == GameManager.GameStates.PausedState)
+        if (GameManager.instance.currentGameState == GameManager.GameStates.PausedState || GameManager.instance.isTilesRotating)
         {
             return;
         }
