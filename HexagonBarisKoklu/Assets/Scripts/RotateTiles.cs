@@ -73,7 +73,7 @@ public class RotateTiles : MonoBehaviour
 
     private void SetTileRotationObjectsAndAnimate()
     {
-        //rotatingTiles.SetActive(true);
+        rotatingTiles.SetActive(true);
 
         for (int i = 0; i < rotatingTiles.transform.childCount; i++)
         {
@@ -116,6 +116,7 @@ public class RotateTiles : MonoBehaviour
             {
                 this.DeleteTiles(tilesToBeDeleted);
                 GameManager.instance.isTilesRotating = false;
+                rotatingTiles.SetActive(false);
                 
             }
             bombScript.CheckForBomb();
@@ -123,6 +124,7 @@ public class RotateTiles : MonoBehaviour
             if (isRotatingBackwards)
             {
                 GameManager.instance.isTilesRotating = false;
+                rotatingTiles.SetActive(false);
             }
         }
     }
